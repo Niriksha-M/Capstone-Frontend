@@ -1,0 +1,53 @@
+<div class="parking-area">
+    <h1>Book Your Parking Spot</h1>
+  
+    <div class="slot-grid">
+      <div
+        *ngFor="let slot of parkingSlots"
+        class="slot"
+        [ngClass]="{'green': !slot.occupied, 'red': slot.occupied}"
+        (click)="onSlotClick(slot)"
+      >
+        <img
+          [src]="slot.category === 'auto' ? 'assets/auto-icon.png' : 'assets/other-icon.png'"
+          alt="Parking Slot"
+        />
+        <div class="slot-label">{{ slot.row }}{{ slot.column }}</div>
+      </div>
+    </div>
+  
+    <!-- Pagination Controls -->
+    <div class="pagination-controls">
+      <button (click)="prevPage()" [disabled]="currentPage === 1">Previous</button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+    </div>
+  </div>
+  
+  <!-- Booking Dialog -->
+  <div id="bookingDialog" class="dialog" *ngIf="selectedSlot">
+    <h3>Book Parking Slot</h3>
+    <form [formGroup]="bookingForm">
+      <label for="employeeId">Employee ID:</label>
+      <input id="employeeId" formControlName="employeeId" type="text" />
+  
+      <label for="hours">Hours:</label>
+      <input id="hours" formControlName="hours" type="number" />
+  
+      <label for="minutes">Minutes:</label>
+      <input id="minutes" formControlName="minutes" type="number" />
+  
+      <div>
+        <label>
+          <input type="checkbox" (change)="setDefaultTime($event)" />
+          Set Default Time (12 Hours)
+        </label>
+      </div>
+  
+      <p>Category: {{ selectedSlot?.category }}</p>
+  
+      <button type="button" (click)="bookSlot()">Book</button>
+      <button type="button" (click)="closeDialog()">Cancel</button>
+    </form>
+  </div>
+  
