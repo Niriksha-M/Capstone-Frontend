@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { HeaderParkingComponent } from '../src/app/header-parking/header-parking.component';
+import { HeaderParkingComponent } from "../header-parking/header-parking.component";
+
 interface ParkingSlot {
   row: string;
   column: number;
@@ -15,7 +16,6 @@ interface ParkingSlot {
   standalone: true,
   styleUrls: ['./car-parking.component.css'],
 })
-
 export class CarParkingComponent implements OnInit {
   parkingSlots: ParkingSlot[] = [];
   currentPageSlots: ParkingSlot[] = [];

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,NgModule } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -17,6 +17,7 @@ interface ParkingSlot {
   standalone: true,
   styleUrls: ['./bike-parking.component.css'],
 })
+
 export class BikeParkingComponent {
   parkingSlots: ParkingSlot[] = [];
   currentPage = 1;
