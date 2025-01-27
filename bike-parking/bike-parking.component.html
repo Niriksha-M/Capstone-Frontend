@@ -1,0 +1,67 @@
+<app-header-parking></app-header-parking>
+<div class="parking-area">
+  <h1>BOOK YOUR PARKING SPOT</h1>
+
+  <div class="slot-grid">
+    <div
+      *ngFor="let slot of paginatedSlots; let i = index"
+      class="slot"
+      [ngClass]="{ green: !slot.occupied, red: slot.occupied }"
+      (click)="onSlotClick(slot)"
+    >
+      <img src="assets/bike-parking-icon.png" alt="Parking Slot" />
+      <div class="slot-label">{{ slot.row }}{{ slot.column }}</div>
+    </div>
+  </div>
+
+  <div class="pagination-controls">
+    <button (click)="prevPage()" [disabled]="currentPage === 1">
+      Previous
+    </button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">
+      Next
+    </button>
+  </div>
+
+  <div id="bookingDialog" class="dialog" style="display: none">
+    <h2>Book Parking Slot</h2>
+    <form [formGroup]="bookingForm">
+      <div class="form-group">
+        <label for="employeeId">Employee ID:</label>
+        <input id="employeeId" formControlName="employeeId" type="text" />
+        <div class="error" *ngIf="bookingForm.get('employeeId')?.invalid && bookingForm.get('employeeId')?.touched">
+          Employee ID is required.
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <label for="hours">Hours:</label>
+        <input id="hours" formControlName="hours" type="number" />
+        <div class="error" *ngIf="bookingForm.get('hours')?.invalid && bookingForm.get('hours')?.touched">
+          Please enter a valid number of hours (minimum 1).
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <label for="minutes">Minutes:</label>
+        <input id="minutes" formControlName="minutes" type="number" />
+        <div class="error" *ngIf="bookingForm.get('minutes')?.invalid && bookingForm.get('minutes')?.touched">
+          Please enter a valid number of minutes (0-59).
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <label>
+          <input type="checkbox" (change)="setDefaultTime($event)" />
+          Set Default Time (12 Hours)
+        </label>
+      </div>
+  
+      <div class="form-actions">
+        <button type="button" (click)="bookSlot()" [disabled]="bookingForm.invalid">Book</button>
+        <button type="button" (click)="closeDialog()">Cancel</button>
+      </div>
+    </form>
+  </div>
+  
