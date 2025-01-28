@@ -1,0 +1,26 @@
+<div>
+    <h3>Admin Parking Slots</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Slot</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let slot of parkingSlots">
+          <td>{{ slot.id }}</td>
+          <td>{{ slot.name }}</td>
+          <td>{{ slot.status }}</td>
+          <td>
+            <button (click)="updateStatus(slot.id, 'Available')">Mark Available</button>
+            <button (click)="updateStatus(slot.id, 'Booked')">Mark Booked</button>
+            <button (click)="deleteSlot(slot.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  

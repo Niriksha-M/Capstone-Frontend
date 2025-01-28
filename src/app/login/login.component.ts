@@ -35,32 +35,6 @@ export class LoginComponent {
     // Clear previous error messages
     this.loginError = null;
 
-    // Check if the form is invalid
-    // if (this.loginForm.invalid) {
-    //   this.loginError = 'Please fill in all fields.';
-    //   return;
-    // }
-
-  //   // Extract form values
-    
-
-  //   // Simulate login validation (replace with actual authentication logic)
-  //   if (
-  //     role === 'user' &&
-  //     username === 'user@example.com' &&
-  //     password === 'password123'
-  //   ) {
-  //     this.router.navigate(['/user-home']); // Redirect to user home page
-  //   } else if (
-  //     role === 'admin' &&
-  //     username === 'admin@example.com' &&
-  //     password === 'admin123'
-  //   ) {
-  //     this.router.navigate(['/admin-home']); // Redirect to admin home page
-  //   } else {
-  //     this.loginError = 'Invalid username, password, or role selection.';
-  //   }
-  // }
   if (this.loginForm.invalid) {
     this.loginError = 'Please fill in all fields.';
     return;
@@ -75,21 +49,24 @@ export class LoginComponent {
     username === 'user@example.com' &&
     password === 'password123'
   ) {
-    this.router.navigate(['/user-home']); // Redirect to user home page
+    this.router.navigate(['/home-page']); // Redirect to user home page
   } else if (
     role === 'admin' &&
     username === 'admin@example.com' &&
     password === 'admin123'
   ) {
-    this.router.navigate(['/admin-home']); // Redirect to admin home page
-  } else if (
-    role === 'constructor' &&
-    username === 'constructor@example.com' &&
-    password === 'constructor123'
-  ) {
-    this.router.navigate(['/constructor-home']); // Redirect to constructor home page
-  } else {
+    this.router.navigate(['/admin-dashboard']); // Redirect to admin home page
+  }
+   else {
     this.loginError = 'Invalid username, password, or role selection.';
+  }
+}
+onRedirectToRegister() {
+  const role = this.loginForm.get('role')?.value;
+  if (role === 'user') {
+    this.router.navigate(['/register'], { queryParams: { role: 'user' } });
+  } else if (role === 'admin') {
+    this.router.navigate(['/register'], { queryParams: { role: 'admin' } });
   }
 }
 }

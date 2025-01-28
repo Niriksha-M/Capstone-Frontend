@@ -35,7 +35,7 @@ export class RegisterComponent {
   onRegister() {
     if (this.registerForm.valid) {
       // Simulate registration logic (replace with actual registration logic)
-      this.router.navigate(['']); // Redirect to login page after successful registration
+      this.router.navigate(['/login']); // Redirect to login page after successful registration
     }
   }
 }
