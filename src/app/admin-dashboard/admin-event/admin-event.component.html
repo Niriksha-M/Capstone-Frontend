@@ -1,1 +1,20 @@
-<p>admin-event works!</p>
+<div class="admin-event-container">
+    <div *ngFor="let event of eventRequests" class="event-card">
+      <div class="event-details">
+        <div class="event-field"><span>EMPLOYEE ID</span> {{ event.employeeId }}</div>
+        <div class="event-field"><span>EVENT NAME</span> {{ event.name }}</div>
+        <div class="event-field"><span>DESCRIPTION</span> {{ event.description }}</div>
+        <div class="event-field"><span>CAPACITY</span> {{ event.capacity }}</div>
+        <div class="event-field"><span>TIME</span> {{ event.time }}</div>
+        <div class="event-field"><span>DATE</span> {{ event.date }}</div>
+        <div class="event-field"><span>FOOD</span> {{ event.food }}</div>
+        <div class="event-field"><span>DIETARY PREFERENCE</span> {{ event.dietaryPreference }}</div>
+      </div>
+      <div class="event-actions">
+        <button class="reject-btn" (click)="rejectEvent(event.id)">REJECT</button>
+        <button class="approve-btn" (click)="approveEvent(event)">APPROVE</button>
+      </div>
+    </div>
+  </div>
+  
+  

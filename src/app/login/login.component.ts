@@ -66,7 +66,7 @@ onRedirectToRegister() {
   if (role === 'user') {
     this.router.navigate(['/register'], { queryParams: { role: 'user' } });
   } else if (role === 'admin') {
-    this.router.navigate(['/register'], { queryParams: { role: 'admin' } });
+    this.router.navigate(['/register'], { queryParams: { role: 'admin' } }); //Must change the path 
   }
 }
 }

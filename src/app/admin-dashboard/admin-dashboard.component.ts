@@ -4,7 +4,7 @@ import { AdminCafeteriaComponent } from './admin-cafeteria/admin-cafeteria.compo
 import { AdminEventComponent } from './admin-event/admin-event.component';
 import { AdminParkingComponent } from './admin-parking/admin-parking.component';
 import { AdminResourceComponent } from './admin-resource/admin-resource.component';
-import { AdminUserComponent } from './admin-user/admin-user.component';
+import { AdminVendorComponent } from './admin-vendor/admin-vendor.component';
 import { AdminWorkspaceComponent } from './admin-workspace/admin-workspace.component';
 
 @Component({
@@ -15,7 +15,7 @@ import { AdminWorkspaceComponent } from './admin-workspace/admin-workspace.compo
     AdminEventComponent,
     AdminParkingComponent,
     AdminResourceComponent,
-    AdminUserComponent,
+    AdminVendorComponent,
     AdminWorkspaceComponent,
   ],
   templateUrl: './admin-dashboard.component.html',
@@ -29,7 +29,7 @@ export class AdminDashboardComponent {
     { name: 'Parking' },
     { name: 'Workspace' },
     { name: 'Event' },
-    { name: 'User' },
+    { name: 'Vendor' },
     { name: 'Resource' },
     { name: 'Cafeteria' },
   ];
