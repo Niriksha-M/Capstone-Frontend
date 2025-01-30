@@ -18,32 +18,21 @@ export class LoginComponent {
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
-      userId: ['', Validators.required],
-      password: ['', Validators.required]
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+      role: ['', Validators.required] // Ensure role is selected
     });
   }
 
-  onSubmit(): void {
+  login() {
     if (this.loginForm.valid) {
       this.authService.login(this.loginForm.value).subscribe(
-        (response: any) => {
-          this.authService.setSession(response.token, response.role);
+        (response) => {
+          localStorage.setItem('token', response.token);
           this.router.navigate(['/home']);
         },
-        (error: HttpErrorResponse) => {
-          console.error('Login failed', error);
-        }
+        (error) => console.error('Login failed', error)
       );
     }
   }
-
-onRedirectToRegister() {
-  const role = this.loginForm.get('role')?.value;
-  if (role === 'user') {
-    this.router.navigate(['/register'], { queryParams: { role: 'user' } });
-  } else if (role === 'admin') {
-    this.router.navigate(['/register'], { queryParams: { role: 'admin' } }); //Must change the path 
-  }
 }
-}
-

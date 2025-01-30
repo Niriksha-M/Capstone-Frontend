@@ -1,41 +1,36 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:9090/api/login';
-  private employeeApiUrl = 'http://localhost:9091/employees';
+  private employeeBaseUrl = 'http://localhost:9090/users';
+  private adminBaseUrl = 'http://localhost:8081/admin';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient) {}
 
-  registerEmployee(employee: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/registeremployee`, employee);
+  // Employee and Resource Person Registration (Port: 9090)
+  registerEmployee(employeeData: any): Observable<any> {
+    return this.http.post(`${this.employeeBaseUrl}/registeremployee`, employeeData);
   }
 
-  login(credentials: { userId: string; password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/authenticate`, credentials);
+  registerResourcePerson(resourcePersonData: any): Observable<any> {
+    return this.http.post(`${this.employeeBaseUrl}/register-resource-person`, resourcePersonData);
   }
 
-  logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    this.router.navigate(['/login']);
+  // Admin Registration (Port: 8081)
+  registerAdmin(adminData: any): Observable<any> {
+    return this.http.post(`${this.adminBaseUrl}/register`, adminData);
   }
 
-  setSession(token: string, role: string): void {
-    localStorage.setItem('token', token);
-    localStorage.setItem('role', role);
-  }
-
-  getToken(): string | null {
-    return localStorage.getItem('token');
-  }
-
-  getRole(): string | null {
-    return localStorage.getItem('role');
+  // Login (Determines API based on Role)
+  login(credentials: any): Observable<any> {
+    if (credentials.role === 'admin') {
+      return this.http.post(`${this.adminBaseUrl}/login`, credentials);
+    } else {
+      return this.http.post(`${this.employeeBaseUrl}/login`, credentials);
+    }
   }
 }

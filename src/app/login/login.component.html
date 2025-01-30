@@ -1,6 +1,6 @@
 <div class="auth-container">
   <h2>Login</h2>
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <form [formGroup]="loginForm" (ngSubmit)="login()">
     <div class="form-group">
       <label for="userId">User ID</label>
       <input type="text" id="userId" formControlName="userId" required />
@@ -20,5 +20,5 @@
     <button type="submit" [disabled]="loginForm.invalid">Login</button>
   </form>
 
-  <p>Don't have an account? <a routerLink="/signup">Sign up</a></p>
+  <p>Don't have an account? <a routerLink="/role-selection">Sign up</a></p>
 </div>
