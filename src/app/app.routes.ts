@@ -11,11 +11,12 @@ import { EventRequestComponent } from './event-request/event-request.component';
 import { CreateEventRequestComponent } from './create-event-request/create-event-request.component';
 import { ParticipateEventComponent } from './participate-in-event/participate-event.component';
 import { WorkspaceComponent } from './workspace/workspace.component';
+import { SignupComponent } from './signup/signup.component';
 
 export const appRoutes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
+  { path: 'signup', component: SignupComponent },
   { path:'home-page', component: HomePageComponent},
   {path:'event-request', component: EventRequestComponent},
   { path:'workspace', component: WorkspaceComponent},
