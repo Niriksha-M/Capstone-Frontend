@@ -1,33 +1,66 @@
+import { Component, OnInit } from '@angular/core';
+import { ParkingSlotService } from '../../parking.service';
+import { ParkingSlot ,VehicleType } from '../../parking-slot.model';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin-parking',
-  imports: [CommonModule],
   templateUrl: './admin-parking.component.html',
-  styleUrl: './admin-parking.component.css'
+  imports:[CommonModule,FormsModule,HttpClientModule],
+  providers: [ParkingSlotService], // Enable change detection for performance optimization
+  styleUrls: ['./admin-parking.component.css']
 })
-export class AdminParkingComponent {
-  parkingSlots = [
-    { id: 1, name: 'A1', status: 'Booked' },
-    { id: 2, name: 'A2', status: 'Available' },
-    { id: 3, name: 'A3', status: 'Booked' },
-  ];
+export class AdminParkingComponent implements OnInit {
+  parkingSlots: ParkingSlot[] = [];
+  vehicleType: VehicleType[] = [];
+  selectedSlot: ParkingSlot | null = null;
+  newSlot: ParkingSlot = { floor: '', section: '', slotNumber: '', vehicleType:'', isBooked: false, employeeId: '', bookTime: '', duration: 0 };
 
-  constructor() {}
+  constructor(private parkingSlotService: ParkingSlotService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.fetchParkingSlots();
+  }
 
-  // Add functions to handle updates, deletions, etc.
-  updateStatus(slotId: number, newStatus: string) {
-    const slot = this.parkingSlots.find(slot => slot.id === slotId);
-    if (slot) {
-      slot.status = newStatus;
+  fetchParkingSlots() {
+    this.parkingSlotService.getAllParkingSlots().subscribe(slots => {
+      this.parkingSlots = slots;
+    });
+  }
+
+  // Delete a parking slot
+  deleteBooking(id: string| undefined){
+    if (id) {
+      this.parkingSlotService.deleteParkingSlot(id).subscribe(() => {
+        this.fetchParkingSlots();  // Refresh the list after deletion
+      });
+    } else {
+      console.warn('Parking Slot ID is undefined!');
     }
   }
 
-  // Example: delete a parking slot
-  deleteSlot(slotId: number) {
-    this.parkingSlots = this.parkingSlots.filter(slot => slot.id !== slotId);
+  // Select a parking slot to edit
+  editBooking(slot: ParkingSlot) {
+    this.selectedSlot = { ...slot };  // Copy the selected slot for editing
+  }
+
+  // Save updated parking slot
+  updateBooking() {
+    if (this.selectedSlot) {
+      this.parkingSlotService.addParkingSlot(this.selectedSlot).subscribe(() => {
+        this.fetchParkingSlots();  // Refresh the list after update
+        this.selectedSlot = null;  // Reset the selected slot
+      });
+    }
+  }
+
+  // Add a new parking slot
+  addNewSlot() {
+    this.parkingSlotService.addParkingSlot(this.newSlot).subscribe(() => {
+      this.fetchParkingSlots();  // Refresh the list after adding
+      this.newSlot = { floor: '', section: '', slotNumber: '', vehicleType: '', isBooked: false, employeeId: '', bookTime: '', duration: 0 };  // Reset the form
+    });
   }
 }

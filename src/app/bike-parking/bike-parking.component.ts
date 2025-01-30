@@ -1,132 +1,85 @@
-import { Component,NgModule } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { ParkingSlotService } from '../parking.service';
+import { ParkingSlot,VehicleType } from '../parking-slot.model';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
-import { HeaderParkingComponent } from "../header-parking/header-parking.component"; 
-
-interface ParkingSlot {
-  row: string;
-  column: number;
-  occupied: boolean;
-}
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-bike-parking',
   templateUrl: './bike-parking.component.html',
-  imports: [CommonModule, ReactiveFormsModule, HeaderParkingComponent],
+  imports:[CommonModule,FormsModule,HttpClientModule],
+  providers:[ParkingSlotService],
   standalone: true,
-  styleUrls: ['./bike-parking.component.css'],
+  styleUrls: ['./bike-parking.component.css']
 })
+export class BikeParkingComponent implements OnInit {
+  floors: string[] = [];
+  sections: string[] = [];
+  slots: ParkingSlot[] = [];
+  
+  selectedFloor?: string;
+  selectedSection?: string;
+  selectedSlot?: ParkingSlot;
+  
+  employeeId: string = '';
+  duration: number = 1;
 
-export class BikeParkingComponent {
-  parkingSlots: ParkingSlot[] = [];
-  currentPage = 1;
-  slotsPerPage = 18;
-  bookingForm: FormGroup;
-  selectedSlot: ParkingSlot | null = null;
+  constructor(private parkingSlotService: ParkingSlotService) {}
 
-  constructor(private fb: FormBuilder) {
-    this.initializeSlots();
-    this.bookingForm = this.fb.group({
-      employeeId: ['', Validators.required],
-      hours: [0, [Validators.required, Validators.min(1)]], // Minimum 1 hour
-      minutes: [0, [Validators.required, Validators.min(0), Validators.max(59)]],
+  ngOnInit(): void {
+    this.fetchFloors();
+  }
+
+  // Fetch available floors
+  fetchFloors(): void {
+    this.parkingSlotService.getAllParkingSlots().subscribe(slots => {
+      this.floors = [...new Set(slots.map(slot => slot.floor))]; // Extract unique floors
     });
   }
 
-  initializeSlots() {
-    const rows = ['A', 'B', 'C', 'D', 'E'];
-    const columns = [1, 2, 3, 4, 5, 6];
-    for (let row of rows) {
-      for (let column of columns) {
-        this.parkingSlots.push({
-          row,
-          column,
-          occupied: false,
-        });
-      }
+  // Fetch sections for selected floor
+  onFloorSelect(): void {
+    if (this.selectedFloor) {
+      this.parkingSlotService.getParkingSlotsByFloor(this.selectedFloor).subscribe(slots => {
+        this.sections = [...new Set(slots.map(slot => slot.section))]; // Extract unique sections
+      });
     }
   }
 
-  get paginatedSlots(): ParkingSlot[] {
-    const startIndex = (this.currentPage - 1) * this.slotsPerPage;
-    return this.parkingSlots.slice(startIndex, startIndex + this.slotsPerPage);
-  }
-
-  get totalPages(): number {
-    return Math.ceil(this.parkingSlots.length / this.slotsPerPage);
-  }
-
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
+  // Fetch available slots for selected floor and section
+  onSectionSelect(): void {
+    if (this.selectedFloor && this.selectedSection) {
+      this.parkingSlotService.getParkingSlotsByFloorAndSection(this.selectedFloor, this.selectedSection).subscribe(slots => {
+        this.slots = slots.filter(slot => slot.vehicleType === VehicleType.BIKE); // Filter for bikes
+      });
     }
   }
 
-  prevPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
-  }
-
-  onSlotClick(slot: ParkingSlot) {
-    if (!slot.occupied) {
+  // Select a slot
+  onSlotSelect(slot: ParkingSlot): void {
+    if (!slot.isBooked) {
       this.selectedSlot = slot;
-      console.log(`Slot selected: ${slot.row}${slot.column}`);
-      const dialog = document.getElementById('bookingDialog');
-      if (dialog) {
-        dialog.style.display = 'block';
-      }
-    } else {
-      alert(`Slot ${slot.row}${slot.column} is already occupied!`);
     }
   }
 
-  bookSlot() {
-    if (this.bookingForm.valid && this.selectedSlot) {
-      const employeeId = this.bookingForm.value.employeeId;
-      const hours = this.bookingForm.value.hours;
-      const minutes = this.bookingForm.value.minutes;
-
-      console.log(
-        `Booking confirmed for Employee ID: ${employeeId}, Slot: ${this.selectedSlot.row}${this.selectedSlot.column}, Duration: ${hours}h ${minutes}m`
-      );
-      this.selectedSlot.occupied = true;
-
-      alert(
-        `Slot booked successfully for Employee ID: ${employeeId}, Slot: ${this.selectedSlot.row}${this.selectedSlot.column}, Duration: ${hours}h ${minutes}m`
-      );
-
-      this.closeDialog();
-    } else {
-      alert('Please fill in all required fields before booking the slot.');
-    }
-  }
-
-  closeDialog() {
-    const dialog = document.getElementById('bookingDialog');
-    if (dialog) {
-      dialog.style.display = 'none';
-    }
-    this.selectedSlot = null;
-    this.bookingForm.reset({
-      employeeId: '',
-      hours: 0,
-      minutes: 0,
-    });
-  }
-
-  setDefaultTime(event: any) {
-    if (event.target.checked) {
-      this.bookingForm.patchValue({
-        hours: 12,
-        minutes: 0,
+  // Book a parking slot
+  bookSlot(): void {
+    if (this.selectedSlot && this.employeeId && this.duration > 0) {
+      this.parkingSlotService.bookParkingSlot(this.selectedSlot, this.employeeId, this.duration).subscribe(response => {
+        alert(`Booking successful! ${response}`);
+        this.selectedSlot = undefined;
+        this.onSectionSelect(); // Refresh slots
+      }, error => {
+        alert('Booking failed! Please try again.');
       });
     } else {
-      this.bookingForm.patchValue({
-        hours: 0,
-        minutes: 0,
-      });
+      alert('Please enter valid details.');
     }
+  }
+
+  // Cancel booking process
+  cancelBooking(): void {
+    this.selectedSlot = undefined;
   }
 }

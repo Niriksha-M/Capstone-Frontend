@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ParcipateInEventComponent } from './parcipate-in-event.component';
+import { ParcipateInEventComponent } from './participate-event.component';
 
 describe('ParcipateInEventComponent', () => {
   let component: ParcipateInEventComponent;
