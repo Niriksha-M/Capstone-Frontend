@@ -18,6 +18,7 @@ export class RegisteremployeeComponent {
 
   constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.registerForm = this.fb.group({
+      id: ['',Validators.required],
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       projectId: ['', Validators.required],

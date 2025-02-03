@@ -1,66 +1,38 @@
-<app-header-parking></app-header-parking>
-<div class="parking-area">
-  <h1>Book Your Parking Spot</h1>
+<div class="parking-container">
+  <h1>Select Your Parking Slot (Other Vehicles)</h1>
 
-  <div class="slot-grid">
-    <div
-      *ngFor="let slot of paginatedSlots"
-      class="slot"
-      [ngClass]="{ 'green': !slot.occupied, 'red': slot.occupied }"
-      (click)="onSlotClick(slot)"
+  <div class="selection">
+    <label for="floor">Select Floor:</label>
+    <select id="floor" [(ngModel)]="selectedFloor" (change)="onFloorSelect()">
+      <option *ngFor="let floor of floors" [value]="floor">{{ floor }}</option>
+    </select>
+  </div>
+
+  <div class="selection" *ngIf="selectedFloor">
+    <label for="section">Select Section:</label>
+    <select id="section" [(ngModel)]="selectedSection" (change)="onSectionSelect()">
+      <option *ngFor="let section of sections" [value]="section">{{ section }}</option>
+    </select>
+  </div>
+
+  <div class="slot-grid" *ngIf="selectedSection">
+    <div 
+      *ngFor="let slot of slots" 
+      class="slot" 
+      [ngClass]="{ 'available': !slot.isBooked, 'booked': slot.isBooked }"
+      (click)="onSlotSelect(slot)"
     >
-      <img
-        [src]="slot.category === 'auto' ? 'assets/auto-parking-icon.png' : 'assets/bus-icon.png'"
-        alt="Parking Slot"
-      />
-      <div class="slot-label">{{ slot.row }}{{ slot.column }}</div>
+      {{ slot.slotNumber }}
     </div>
   </div>
 
-  <!-- Pagination Controls -->
-  <div class="pagination-controls">
-    <button (click)="prevPage()" [disabled]="currentPage === 1">Previous</button>
-    <span>Page {{ currentPage }} of {{ totalPages }}</span>
-    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+  <div class="booking-dialog" *ngIf="selectedSlot">
+    <h2>Book Slot {{ selectedSlot.slotNumber }}</h2>
+    <label>Employee ID:</label>
+    <input type="text" [(ngModel)]="employeeId" />
+    <label>Duration (hours):</label>
+    <input type="number" [(ngModel)]="duration" min="1" />
+    <button (click)="bookSlot()">Book</button>
+    <button (click)="cancelBooking()">Cancel</button>
   </div>
-</div>
-
-<!-- Booking Dialog -->
-<div id="bookingDialog" class="dialog" *ngIf="selectedSlot">
-  <h3>Book Parking Slot</h3>
-  <form [formGroup]="bookingForm">
-    <label for="employeeId">Employee ID:</label>
-    <input id="employeeId" formControlName="employeeId" type="text" />
-    <div *ngIf="bookingForm.get('employeeId')?.invalid && bookingForm.get('employeeId')?.touched">
-      <small class="error">Employee ID is required and must be alphanumeric.</small>
-    </div>
-
-    <label for="hours">Hours:</label>
-    <input id="hours" formControlName="hours" type="number" />
-    <div *ngIf="bookingForm.get('hours')?.invalid && bookingForm.get('hours')?.touched">
-      <small class="error">Hours must be between 1 and 24.</small>
-    </div>
-
-    <label for="minutes">Minutes:</label>
-    <input id="minutes" formControlName="minutes" type="number" />
-    <div *ngIf="bookingForm.get('minutes')?.invalid && bookingForm.get('minutes')?.touched">
-      <small class="error">Minutes must be between 0 and 59.</small>
-    </div>
-
-    <label>Category:</label>
-    <div>
-      <label>
-        <input type="radio" formControlName="category" value="auto" /> Auto
-      </label>
-      <label>
-        <input type="radio" formControlName="category" value="other" /> Other
-      </label>
-    </div>
-    <div *ngIf="bookingForm.get('category')?.invalid && bookingForm.get('category')?.touched">
-      <small class="error">Please select a category.</small>
-    </div>
-
-    <button type="button" (click)="bookSlot()">Book</button>
-    <button type="button" (click)="closeDialog()">Cancel</button>
-  </form>
 </div>

@@ -41,7 +41,7 @@ export class ParkingSlotService {
         slotNumber: slot.slotNumber,
         employeeId,
         vehicleType: slot.vehicleType,
-        duration: duration.toString()
+        duration: duration
       }
     });
   }
